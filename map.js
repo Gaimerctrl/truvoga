@@ -75,20 +75,30 @@ const P={
  unknown:"M0,-11 L11,0 L0,11 L-11,0 Z M-1.6,3 h3.2 v3.2 h-3.2Z M-4,-3.5 C-4,-8 4,-8 4,-3.5 C4,-1 1.6,-0.5 1.6,1.8 L-1.6,1.8 C-1.6,-1.5 1,-1.8 1,-3.5 C1,-5 -1,-5 -1,-3.5Z",
  burst:"M0,-12 L3,-4 L11,-6 L5,1 L10,8 L2,5 L0,12 L-2,5 L-10,8 L-5,1 L-11,-6 L-3,-4 Z",
  shield:"M0,-11 L9,-7 L8,3 L0,11 L-8,3 L-9,-7 Z",
+ sh:"M0,-12 L2.5,-5 L13,5 L13,7.5 L2.5,5 L1.5,9 L-1.5,9 L-2.5,5 L-13,7.5 L-13,5 L-2.5,-5 Z",
+ g5:"M0,-15 L1.7,-10 L1.7,-3 L11.5,-1 L11.5,1.6 L1.7,1.6 L1.7,9 L5.5,12.5 L-5.5,12.5 L-1.7,9 L-1.7,1.6 L-11.5,1.6 L-11.5,-1 L-1.7,-3 L-1.7,-10 Z",
+ jet:"M0,-14 L1.8,-7 L2.2,-2 L10,6 L10,8 L2.2,5 L2,9 L5,12 L-5,12 L-2,9 L-2.2,5 L-10,8 L-10,6 L-2.2,-2 L-1.8,-7 Z",
 };
 const TYPES={
- shahed:{name:'Шахед',short:'Шахед',color:'#ff8a00',glyph:'delta',dir:true},
- fpv:{name:'БпЛА FPV / Ланцет',short:'FPV',color:'#ff7a7a',glyph:'fpv',dir:true},
- recon:{name:'Розвідувальний БпЛА',short:'Розвідка',color:'#ffd60a',glyph:'recon',dir:true},
- cruise:{name:'Крилата ракета',short:'Крилата',color:'#ff375f',glyph:'rocket',dir:true},
- ballistic:{name:'Балістика',short:'Балістика',color:'#bf5af2',glyph:'ballistic',dir:true},
- kab:{name:'КАБ',short:'КАБ',color:'#40c8e0',glyph:'bomb',dir:true},
- aviation:{name:'Авіація / МіГ-31К',short:'Авіація',color:'#d1d5db',glyph:'plane',dir:true},
- unknown:{name:'Невідома ціль',short:'Невідомі',color:'#a1a1aa',glyph:'unknown',dir:true},
- explosion:{name:'Вибух / приліт',short:'Вибух',color:'#ff453a',glyph:'burst',dir:false},
- pvo:{name:'Робота ППО',short:'ППО',color:'#30d158',glyph:'shield',dir:false},
+ shahed:{name:'«Шахед» · тип не уточнено',short:'Шахед',color:'#ff8a00',fill:'#ffffff',glyph:'sh',dir:true,sil:true,extr:true,speed:180,speedTxt:'150–200 км/год',desc:'Загальне позначення ударного БпЛА родини Shahed без підтвердження модифікації.'},
+ shahed136:{name:'Shahed-136 / «Герань-2»',short:'Shahed-136',color:'#ff8a00',fill:'#ffffff',glyph:'sh',dir:true,sil:true,extr:true,speed:170,speedTxt:'150–185 км/год',desc:'Ударний БпЛА-камікадзе з поршневим двигуном. Характерний звук «мопеда».'},
+ jet:{name:'Реактивний Shahed / «Герань-3»',short:'Реактивний',color:'#ff5e3a',fill:'#ffc9b8',glyph:'jet',dir:true,sil:true,extr:true,speed:500,speedTxt:'400–600 км/год',desc:'Ударний БпЛА з реактивним двигуном. Летить у кілька разів швидше за звичайний «Шахед».'},
+ geran4:{name:'«Герань-4» (реактивний)',short:'Герань-4',color:'#ff4d2e',fill:'#ffb199',glyph:'jet',dir:true,sil:true,extr:true,speed:400,speedTxt:'300–400 км/год, до 500',desc:'Реактивний ударний БпЛА з новим планером. За даними ГУР, маневрує на 300–400 км/год, висота до 5 км, дальність до 450 км.'},
+ geran5:{name:'«Герань-5» (реактивна)',short:'Герань-5',color:'#ff2d55',fill:'#ff9fb3',glyph:'g5',dir:true,sil:true,extr:true,speed:500,speedTxt:'450–600 км/год',desc:'Фактично дешева крилата ракета з реактивним двигуном: БЧ ~90 кг, дальність ~1000 км. Модифікація К5-К на окремих маневрах — до 1000 км/год.'},
+ gerbera:{name:'«Гербера» / дрон-імітатор',short:'Гербера',color:'#c4c4cc',fill:'none',glyph:'sh',dir:true,sil:true,extr:true,speed:150,speedTxt:'~150 км/год',desc:'Дешевий дрон-імітатор для перевантаження ППО. Деякі несуть бойову частину.'},
+ fpv:{name:'БпЛА FPV / Ланцет',short:'FPV',color:'#ff7a7a',glyph:'fpv',dir:true,sil:true,extr:true,speed:100,speedTxt:'80–120 км/год',desc:'Ударні дрони малої дальності поблизу лінії фронту.'},
+ recon:{name:'Розвідувальний БпЛА',short:'Розвідка',color:'#ffd60a',fill:'#ffe680',glyph:'recon',dir:true,sil:true,extr:true,speed:130,speedTxt:'100–150 км/год',desc:'Розвідка часто передує ударам: коригує ракети й дрони.'},
+ cruise:{name:'Крилата ракета',short:'Крилата',color:'#ff375f',glyph:'rocket',dir:true,sil:true,extr:true,speed:750,speedTxt:'700–900 км/год',desc:'Х-101, Калібр та інші. Летять низько й маневрують.'},
+ ballistic:{name:'Балістика',short:'Балістика',color:'#bf5af2',glyph:'ballistic',dir:true,sil:true,extr:false,speed:3000,speedTxt:'понад 3000 км/год',desc:'Іскандер-М, KN-23, Кинджал. Час підльоту — лічені хвилини. Одразу в укриття!'},
+ kab:{name:'КАБ',short:'КАБ',color:'#40c8e0',glyph:'bomb',dir:true,sil:true,extr:false,speed:400,speedTxt:'—',desc:'Керовані авіабомби, скидаються з літаків поблизу фронту.'},
+ aviation:{name:'Авіація / МіГ-31К',short:'Авіація',color:'#e5e7eb',fill:'#ffffff',glyph:'plane',dir:true,sil:true,extr:false,speed:900,speedTxt:'—',desc:'Зліт носіїв ракет (МіГ-31К — Кинджал). Загроза для всієї країни.'},
+ unknown:{name:'Невідома ціль',short:'Невідомі',color:'#a1a1aa',glyph:'unknown',dir:true,extr:false,speed:0,desc:'Тип цілі ще уточнюється.'},
+ explosion:{name:'Вибух / приліт',short:'Вибух',color:'#ff453a',glyph:'burst',dir:false,speed:0},
+ pvo:{name:'Робота ППО',short:'ППО',color:'#30d158',glyph:'shield',dir:false,speed:0},
 };
-const DANGER_TYPES=['ballistic','cruise','aviation'];
+const DRONES=['shahed','shahed136','jet','geran4','geran5','gerbera'];
+const DANGER_TYPES=['ballistic','cruise','aviation','jet','geran4','geran5'];
+const EXTRAP_MIN=+CFG.EXTRAPOLATE_MIN||20;
 const REL={1:'низька',2:'середня',3:'висока'};
 const KINDS={info:{name:'Інфо',color:'#3b82f6'},warn:{name:'Увага',color:'#e3b008'},danger:{name:'Загроза',color:'#e5484d'},ok:{name:'Відбій',color:'#30d158'}};
 const ORDER=[KYIV.id,...OBLASTS.map(o=>o[0])];
@@ -258,6 +268,7 @@ const gCities=zg.append('g');
 const gTrails=zg.append('g');
 const gMarkers=zg.append('g');
 const preview=zg.append('line').attr('id','preview').style('display','none');
+const gHome=zg.insert('g',()=>gTrails.node()).attr('class','home').style('pointer-events','none');
 
 const seeds=[];Object.keys(RN).forEach(rid=>RN[rid].pts.forEach(q=>seeds.push({rid,oid:RN[rid].oid,p:pr(q[0],q[1])})));
 const delaunay=d3.Delaunay.from(seeds.map(s=>s.p));
@@ -307,8 +318,8 @@ const cg=gCities.selectAll('g').data(cities).join('g').attr('class','city').styl
 cg.append('circle');cg.append('text');
 
 const zoom=d3.zoom().scaleExtent([1,14]).translateExtent([[-100,-100],[W+100,H+100]])
-  .filter(e=>{if(e.type==='wheel')return true;if(e.type==='dblclick')return false;if(e.touches&&e.touches.length>1)return true;return (mode==='select'||mode==='view')&&!e.button;})
-  .on('zoom',e=>{zg.attr('transform',e.transform);k=e.transform.k;rescale();});
+  .filter(e=>{if(e.type==='wheel')return true;if(e.type==='dblclick')return false;if(e.touches&&e.touches.length>1)return true;return (mode==='select'||mode==='view'||mode==='pick')&&!e.button;})
+  .on('zoom',e=>{zg.attr('transform',e.transform);k=e.transform.k;if(e.sourceEvent&&e.sourceEvent.type!=='wheel'&&followId){followId=null;renderPopup(true);}rescale();});
 svg.call(zoom).on('dblclick.zoom',null);
 d3.select('#zin').on('click',()=>svg.transition().duration(250).call(zoom.scaleBy,1.6));
 d3.select('#zout').on('click',()=>svg.transition().duration(250).call(zoom.scaleBy,1/1.6));
@@ -373,33 +384,69 @@ function whereIs(lon,lat){const w=whereObj(lon,lat);const near=nearestCity(lon,l
 function ageMin(m){return (now()-ts(m.updated_at))/60000;}
 function opacityOf(m){const a=ageMin(m);return a<20?1:a<60?.8:.55;}
 function showDir(m){return m.heading!=null&&(ADMIN||m.reliability>=2);}
+function destPoint(lon,lat,brg,km){const R=6371,d=km/R,t=brg*Math.PI/180,f1=lat*Math.PI/180,l1=lon*Math.PI/180;
+  const f2=Math.asin(Math.sin(f1)*Math.cos(d)+Math.cos(f1)*Math.sin(d)*Math.cos(t));
+  const l2=l1+Math.atan2(Math.sin(t)*Math.sin(d)*Math.cos(f1),Math.cos(d)-Math.sin(f1)*Math.sin(f2));return [l2*180/Math.PI,f2*180/Math.PI];}
+function bearing(a,b){const f1=a[1]*Math.PI/180,f2=b[1]*Math.PI/180,dl=(b[0]-a[0])*Math.PI/180;
+  return (Math.atan2(Math.sin(dl)*Math.cos(f2),Math.cos(f1)*Math.sin(f2)-Math.sin(f1)*Math.cos(f2)*Math.cos(dl))*180/Math.PI+360)%360;}
+function moving(m){const t=TYPES[m.type];return prefs.extrap!==false&&t&&t.extr&&m.heading!=null&&m.reliability>=2&&t.speed>0;}
+function posOf(m){if(!moving(m))return [m.lon,m.lat];const min=Math.min(EXTRAP_MIN,Math.max(0,(now()-ts(m.updated_at))/60000));
+  return min<0.05?[m.lon,m.lat]:destPoint(m.lon,m.lat,m.heading,TYPES[m.type].speed*min/60);}
+function rebase(m){const p=posOf(m);if(p[0]!==m.lon||p[1]!==m.lat){m.trail=(m.trail||[]).concat([[m.lon,m.lat]]).slice(-40);m.lon=p[0];m.lat=p[1];}m.updated_at=now();}
 
+let followId=null;
 function renderMarkers(){
   const sel=gMarkers.selectAll('g.marker').data(D.threats.filter(m=>TYPES[m.type]),d=>d.id);
   const ent=sel.enter().append('g').attr('class','marker');
-  ent.append('path').attr('class','heading');ent.append('path').attr('class','arrowhead');
+  ent.append('path').attr('class','tail');ent.append('path').attr('class','heading');ent.append('path').attr('class','arrowhead');
   ent.append('circle').attr('class','halo').attr('r',15);ent.append('path').attr('class','glyph');
-  ent.append('text').attr('class','badge').attr('x',11).attr('y',-10);
+  ent.append('text').attr('class','badge').attr('x',12).attr('y',-11);
   if(ADMIN)ent.call(d3.drag().filter(e=>mode==='select'&&!e.button)
-    .on('start',function(e,d){d._moved=false;d._orig=[d.lon,d.lat];dragging=true;})
-    .on('drag',function(e,d){const p=d3.pointer(e.sourceEvent,zg.node());const ll=inv(p[0],p[1]);d.lon=ll[0];d.lat=ll[1];d._moved=true;renderMarkers();})
+    .on('start',function(e,d){d._moved=false;const p=posOf(d);d._orig=[p[0],p[1]];dragging=true;})
+    .on('drag',function(e,d){const p=d3.pointer(e.sourceEvent,zg.node());const ll=inv(p[0],p[1]);d.lon=ll[0];d.lat=ll[1];d.updated_at=now();d._moved=true;renderMarkers();})
     .on('end',function(e,d){dragging=false;if(d._moved){d.trail=(d.trail||[]).concat([d._orig]).slice(-40);d.updated_at=now();saveThreat(d,0);renderAll();}}));
   ent.on('click',(e,d)=>{e.stopPropagation();if(!ADMIN||mode==='select'||mode in TYPES)select(d.id);});
   sel.exit().remove();
   const all=ent.merge(sel);
-  all.classed('sel',d=>d.id===selected).classed('low',d=>d.reliability===1).attr('opacity',d=>opacityOf(d)*(d.reliability===1?.8:1))
-    .attr('transform',d=>{const p=pr(d.lon,d.lat);return `translate(${p[0]},${p[1]}) scale(${1/Math.pow(k,.85)})`;});
-  all.select('.halo').attr('stroke',d=>TYPES[d.type].color);
-  all.select('.glyph').attr('d',d=>P[TYPES[d.type].glyph]).attr('fill',d=>TYPES[d.type].color).attr('fill-rule','evenodd')
-    .attr('transform',d=>d.heading!=null&&TYPES[d.type].dir&&d.type!=='unknown'?`rotate(${d.heading})`:null);
+  const sc=1/Math.pow(k,.85);
+  all.classed('sel',d=>d.id===selected).classed('low',d=>d.reliability===1).classed('sil',d=>!!TYPES[d.type].sil)
+    .attr('opacity',d=>opacityOf(d)*(d.reliability===1?.75:1))
+    .attr('transform',d=>{const q=posOf(d);const p=pr(q[0],q[1]);return `translate(${p[0]},${p[1]}) scale(${sc})`;});
+  all.select('.halo').attr('stroke',d=>TYPES[d.type].color).style('display',d=>!TYPES[d.type].sil||d.id===selected?null:'none');
+  all.select('.glyph').attr('d',d=>P[TYPES[d.type].glyph]).attr('fill-rule','evenodd')
+    .attr('fill',d=>{const t=TYPES[d.type];return t.fill==='none'?'rgba(0,0,0,.35)':(t.fill||t.color);})
+    .attr('stroke',d=>{const t=TYPES[d.type];return t.sil?(t.fill==='none'?t.color:'#05080c'):null;})
+    .attr('stroke-width',d=>TYPES[d.type].fill==='none'?1.8:1.1)
+    .attr('stroke-dasharray',d=>d.reliability===1&&TYPES[d.type].sil?'3 2':null)
+    .attr('transform',d=>{const t=TYPES[d.type];const r=d.heading!=null&&t.dir&&d.type!=='unknown'?`rotate(${d.heading})`:'';return r+(t.sil?' scale(1.15)':'');});
+  // «хвіст» позаду силуету
+  all.select('.tail').attr('stroke',d=>TYPES[d.type].fill&&TYPES[d.type].fill!=='none'?TYPES[d.type].fill:TYPES[d.type].color)
+    .attr('d',d=>{if(!TYPES[d.type].sil||!showDir(d))return null;const r=d.heading*Math.PI/180;return `M${-Math.sin(r)*12},${Math.cos(r)*12}L${-Math.sin(r)*34},${Math.cos(r)*34}`;});
+  // стрілка курсу — для звичайних іконок або вибраної цілі
+  const arrow=d=>showDir(d)&&!TYPES[d.type].sil;
   all.select('.heading').attr('stroke',d=>TYPES[d.type].color)
-    .attr('d',d=>{if(!showDir(d))return null;const r=d.heading*Math.PI/180;return `M${Math.sin(r)*17},${-Math.cos(r)*17}L${Math.sin(r)*52},${-Math.cos(r)*52}`;});
-  all.select('.arrowhead').attr('fill',d=>TYPES[d.type].color).attr('d',d=>showDir(d)?'M0,-60 L6,-50 L-6,-50Z':null).attr('transform',d=>showDir(d)?`rotate(${d.heading})`:null);
+    .attr('d',d=>{if(!arrow(d))return null;const r=d.heading*Math.PI/180;return `M${Math.sin(r)*17},${-Math.cos(r)*17}L${Math.sin(r)*52},${-Math.cos(r)*52}`;});
+  all.select('.arrowhead').attr('fill',d=>TYPES[d.type].color).attr('d',d=>arrow(d)?'M0,-60 L6,-50 L-6,-50Z':null).attr('transform',d=>arrow(d)?`rotate(${d.heading})`:null);
   all.select('.badge').text(d=>d.count>1?'×'+d.count:'');
-  const tr=gTrails.selectAll('path').data(D.threats.filter(m=>m.trail&&m.trail.length&&TYPES[m.type]),d=>d.id);
+  // пройдений шлях
+  const tr=gTrails.selectAll('path.trail').data(D.threats.filter(m=>m.trail&&m.trail.length&&TYPES[m.type]),d=>d.id);
   tr.exit().remove();
-  tr.enter().append('path').attr('class','trail').merge(tr).attr('stroke',d=>TYPES[d.type].color)
-    .attr('stroke-width',1.6/k).attr('stroke-dasharray',`${2/k} ${4/k}`).attr('d',d=>lineGen([...d.trail,[d.lon,d.lat]].map(p=>pr(p[0],p[1]))));
+  tr.enter().append('path').attr('class','trail').merge(tr).attr('stroke',d=>d.id===selected?'#ffffff':TYPES[d.type].color)
+    .attr('opacity',d=>d.id===selected?.9:.45)
+    .attr('stroke-width',d=>(d.id===selected?2:1.4)/k).attr('stroke-dasharray',d=>d.id===selected?null:`${2/k} ${4/k}`)
+    .attr('d',d=>lineGen([...d.trail,posOf(d)].map(p=>pr(p[0],p[1]))));
+  // прогноз для вибраної цілі: точки через 5/10/15 хв
+  const m=D.threats.find(x=>x.id===selected);const fc=gTrails.selectAll('g.forecast').data(m&&showDir(m)&&TYPES[m.type].speed&&TYPES[m.type].sil?[m]:[],d=>d.id);
+  fc.exit().remove();
+  const fe=fc.enter().append('g').attr('class','forecast');fe.append('path');
+  fe.merge(fc).each(function(d){const g=d3.select(this);const p0=posOf(d);const sp=TYPES[d.type].speed;
+    const marks=[5,10,15].map(mn=>({mn,ll:destPoint(p0[0],p0[1],d.heading,sp*mn/60)}));
+    g.select('path').attr('d',`M${pr(p0[0],p0[1])}L${pr(marks[2].ll[0],marks[2].ll[1])}`).attr('stroke','#fff').attr('stroke-width',1.6/k).attr('stroke-dasharray',`${5/k} ${4/k}`).attr('opacity',.8).attr('fill','none');
+    const dots=g.selectAll('g.fm').data(marks).join(en=>{const x=en.append('g').attr('class','fm');x.append('circle');x.append('text');return x;});
+    dots.attr('transform',q=>{const p=pr(q.ll[0],q.ll[1]);return `translate(${p[0]},${p[1]})`;});
+    dots.select('circle').attr('r',3/k).attr('fill','#fff');
+    dots.select('text').attr('x',5/k).attr('y',-5/k).attr('font-size',10/k).style('stroke-width',(2.5/k)+'px').text(q=>q.mn+' хв');});
+  renderHome();
 }
 const saveTimers={};
 function saveThreat(m,delay){clearTimeout(saveTimers[m.id]);saveTimers[m.id]=setTimeout(()=>{const c=Object.assign({},m);delete c._moved;delete c._orig;backend.upsertThreat(c).catch(fail);},delay==null?400:delay);}
@@ -418,19 +465,26 @@ svg.on('click.desel',e=>{if((mode==='select'||mode==='view')&&!e.target.closest(
 function renderPopup(force){
   const box=$('popup');const m=D.threats.find(x=>x.id===selected);
   if(!m){box.style.display='none';return;}
-  if(!force&&box.contains(document.activeElement)&&document.activeElement.tagName==='INPUT'){const i=box.querySelector('.meta');if(i)i.innerHTML=metaHtml(m);return;}
+  if(!force&&((box.contains(document.activeElement)&&document.activeElement.tagName==='INPUT')||box.dataset.id===m.id)){const i=box.querySelector('.meta');if(i)i.innerHTML=metaHtml(m);const l=box.querySelector('.live');if(l)l.innerHTML=liveHtml(m);return;}
+  box.dataset.id=m.id;
   const t=TYPES[m.type];box.style.display='block';
   if(ADMIN&&innerWidth>820)box.style.top=($('toolbar').offsetHeight+18)+'px';
-  let h=`<h3>${glyphSvg(m.type,20)} ${t.name}${m.count>1?' ×'+m.count:''}</h3><div class="meta">${metaHtml(m)}</div>`;
+  let h=`<h3>${glyphSvg(m.type,20)} ${t.name}${m.count>1?' ×'+m.count:''}</h3>`;
   if(!ADMIN){
-    h+=`<div class="f"><span>Достовірність</span>${relHtml(m.reliability)} ${REL[m.reliability]}</div>`;
-    if(showDir(m))h+=`<div class="f"><span>Курс</span>${dirName(m.heading)}</div>`;
-    if(m.note)h+=`<div class="f"><span>Примітка</span>${esc(m.note)}</div>`;
-    h+=`<div class="btns" style="margin-top:8px"><button class="btn" data-a="close">Закрити</button></div>`;
+    h=`<button class="x pclose" data-a="close" title="Закрити">✕</button><h3 class="ptitle">${t.name}${m.count>1?' <span class="pcount">×'+m.count+'</span>':''}</h3>
+      <div class="psil">${silSvg(m.type)}</div>${t.desc?`<div class="pdesc">${t.desc}</div>`:''}
+      ${t.speedTxt&&t.speedTxt!=='—'?`<div class="pspeed">Орієнтовна швидкість: <b>${t.speedTxt}</b></div>`:''}
+      <div class="meta">${metaHtml(m)}</div>
+      <div class="f"><span>Достовірність</span>${relHtml(m.reliability)} ${REL[m.reliability]}</div>
+      ${showDir(m)?`<div class="f"><span>Курс</span>${dirName(m.heading)}</div>`:''}
+      ${m.note?`<div class="f"><span>Примітка</span>${esc(m.note)}</div>`:''}
+      <div class="live">${liveHtml(m)}</div>
+      <div class="btns" style="margin-top:10px"><button class="btn ${followId===m.id?'primary':''}" data-a="follow">⌖ ${followId===m.id?'Стежу':'Стежити'}</button><button class="btn" data-a="home">📍 Моя точка</button></div>`;
   }else{
     h+=`<div class="f"><span>Кількість</span><button class="btn" data-a="dec">−</button><b style="min-width:24px;text-align:center">${m.count}</b><button class="btn" data-a="inc">+</button></div>
     <div class="f"><span>Достовірність</span><select data-a="rel">${[1,2,3].map(r=>`<option value="${r}" ${m.reliability===r?'selected':''}>${REL[r]}</option>`).join('')}</select></div>
-    <div class="f"><span>Тип</span><select data-a="type">${Object.keys(TYPES).map(x=>`<option value="${x}" ${m.type===x?'selected':''}>${TYPES[x].name}</option>`).join('')}</select></div>
+    <div class="meta">${metaHtml(m)}</div>
+    <div class="f"><span>Тип</span><select data-a="type" style="flex:1;min-width:0">${Object.keys(TYPES).map(x=>`<option value="${x}" ${m.type===x?'selected':''}>${TYPES[x].name}</option>`).join('')}</select></div>
     ${t.dir?`<div class="f"><span>Курс</span><input type="range" min="0" max="359" value="${m.heading==null?0:Math.round(m.heading)}" data-a="hd" ${m.heading==null?'style="opacity:.4"':''}><b style="width:66px">${m.heading==null?'—':dirName(m.heading)}</b></div>
     <label class="inline"><input type="checkbox" data-a="nodir" ${m.heading==null?'checked':''}> без курсу</label>`:''}
     <div class="f"><span>Примітка</span><input type="text" data-a="note" value="${esc(m.note)}" placeholder="видно всім" style="flex:1;min-width:0"></div>
@@ -439,23 +493,35 @@ function renderPopup(force){
   box.innerHTML=h;
   box.querySelectorAll('[data-a]').forEach(el=>{
     const a=el.dataset.a;
-    if(a==='hd'){el.oninput=()=>{m.heading=+el.value;el.nextElementSibling.textContent=dirName(m.heading);el.style.opacity=1;const cb=box.querySelector('[data-a=nodir]');if(cb)cb.checked=false;renderMarkers();};el.onchange=()=>{m.updated_at=now();saveThreat(m);renderLists();};return;}
+    if(a==='hd'){el.onpointerdown=()=>rebase(m);el.oninput=()=>{m.heading=+el.value;el.nextElementSibling.textContent=dirName(m.heading);el.style.opacity=1;const cb=box.querySelector('[data-a=nodir]');if(cb)cb.checked=false;renderMarkers();};el.onchange=()=>{m.updated_at=now();saveThreat(m);renderLists();};return;}
     if(a==='note'){el.oninput=()=>{m.note=el.value;saveThreat(m,800);};el.onchange=()=>renderLists();return;}
     if(a==='nodir'){el.onchange=()=>{m.heading=el.checked?null:0;saveThreat(m,0);renderAll(true);};return;}
     if(a==='rel'){el.onchange=()=>{m.reliability=+el.value;saveThreat(m,0);renderAll(true);};return;}
-    if(a==='type'){el.onchange=()=>{m.type=el.value;if(!TYPES[m.type].dir)m.heading=null;saveThreat(m,0);renderAll(true);};return;}
+    if(a==='type'){el.onchange=()=>{rebase(m);m.type=el.value;if(!TYPES[m.type].dir)m.heading=null;saveThreat(m,0);renderAll(true);};return;}
     el.onclick=()=>{
-      if(a==='close'){selected=null;renderMarkers();renderPopup(true);return;}
+      if(a==='close'){selected=null;followId=null;box.dataset.id='';renderMarkers();renderPopup(true);return;}
+      if(a==='follow'){followId=followId===m.id?null:m.id;if(followId)centerOn(m,true);renderPopup(true);return;}
+      if(a==='home'){openHomeSection();return;}
       if(a==='del'){delThreat(m);return;}
       if(a==='inc'){m.count++;saveThreat(m);}
       if(a==='dec'){m.count=Math.max(1,m.count-1);saveThreat(m);}
-      if(a==='touch'){m.updated_at=now();saveThreat(m,0);}
+      if(a==='touch'){rebase(m);saveThreat(m,0);}
       if(a==='clrtrail'){m.trail=[];saveThreat(m,0);}
       if(a==='dup'){const n=Object.assign({},m,{id:uid(),lat:m.lat-0.08,lon:m.lon+0.08,trail:[],created_at:now(),updated_at:now()});D.threats.push(n);selected=n.id;saveThreat(n,0);}
       renderAll(true);};
   });
 }
-function metaHtml(m){return `${esc(whereIs(m.lon,m.lat))}<br>оновлено ${fmtTime(m.updated_at)} · ${fmtAgo(m.updated_at)}`;}
+function metaHtml(m){const p=posOf(m);return `${esc(whereIs(p[0],p[1]))}<br>оновлено ${fmtTime(m.updated_at)} · ${fmtAgo(m.updated_at)}${moving(m)?' · <span title="Положення розраховане за курсом і швидкістю">прогноз руху</span>':''}`;}
+function silSvg(type){const t=TYPES[type];const f=t.fill==='none'?'none':(t.fill||t.color);
+  return `<svg width="64" height="64" viewBox="-16 -16 32 32"><path d="${P[t.glyph]}" fill="${f}" stroke="${t.fill==='none'?t.color:'none'}" stroke-width="1.4" fill-rule="evenodd" transform="rotate(90)"/></svg>`;}
+function etaInfo(m){if(!prefs.home)return null;const p=posOf(m);const h=[prefs.home.lon,prefs.home.lat];const dist=distKm(p[0],p[1],h[0],h[1]);
+  const t=TYPES[m.type];let eta=null,toward=null;
+  if(m.heading!=null&&t.speed){const diff=Math.abs(((bearing(p,h)-m.heading)+540)%360-180);toward=diff<35;if(toward)eta=dist/t.speed*60;}
+  return {dist,eta,toward};}
+function liveHtml(m){const e=etaInfo(m);if(!e)return '<div class="pnote">Для відстані й часу підльоту обери свою точку.</div>';
+  return `<div class="peta ${e.dist<=(prefs.zoneKm||25)?'near':''}">До ${esc(prefs.home.name||'моєї точки')}: <b>${e.dist<10?e.dist.toFixed(1):Math.round(e.dist)} км</b>${e.toward?(e.eta!=null?` · підліт ~<b>${e.eta<1?'<1':Math.round(e.eta)} хв</b>`:''):(m.heading!=null?' · курс не на тебе':'')}</div>`;}
+function centerOn(m,zoomIn){const p0=posOf(m);const p=pr(p0[0],p0[1]);const kk=zoomIn?Math.max(k,4):k;const t=d3.zoomIdentity.translate(W/2-p[0]*kk,H/2-p[1]*kk).scale(kk);
+  if(zoomIn)svg.transition().duration(500).call(zoom.transform,t);else svg.call(zoom.transform,t);}
 
 /* ---------- Списки, легенда, шапка ---------- */
 function renderLegend(){
@@ -475,7 +541,7 @@ function renderLists(){
   const nR=ORDER.filter(id=>sts[id].r).length,nY=ORDER.filter(id=>sts[id].n&&!sts[id].r).length;
   // шапка
   const total=D.threats.reduce((a,m)=>a+m.count,0);
-  const sh=D.threats.filter(m=>m.type==='shahed').reduce((a,m)=>a+m.count,0);
+  const sh=D.threats.filter(m=>DRONES.includes(m.type)).reduce((a,m)=>a+m.count,0);
   $('topchips').innerHTML=`<span class="chip"><span class="dot" style="background:var(--red)"></span>Тривога: <b>${nR}</b><span class="hide-m">обл.</span></span>`+
     (nY?`<span class="chip"><span class="dot" style="background:var(--yellow)"></span>Загроза: <b>${nY}</b></span>`:'')+
     (sh?`<span class="chip hide-m"><span class="dot" style="background:${TYPES.shahed.color}"></span>Шахеди: <b>${sh}</b></span>`:'')+
@@ -505,10 +571,10 @@ function renderLists(){
   // цілі
   $('objCnt').textContent=total;
   const ms=[...D.threats].filter(m=>TYPES[m.type]).sort((a,b)=>ts(b.updated_at)-ts(a.updated_at));
-  $('objList').innerHTML=ms.length?ms.map(m=>`<div class="row" data-id="${m.id}">${glyphSvg(m.type,18)}<div class="name">${TYPES[m.type].name}${m.count>1?' ×'+m.count:''}${showDir(m)?' → '+dirName(m.heading):''}<br><small>${esc(whereIs(m.lon,m.lat))}${m.note?' · '+esc(m.note):''}</small></div><small>${fmtTime(m.updated_at)}</small></div>`).join('')
+  $('objList').innerHTML=ms.length?ms.map(m=>`<div class="row" data-id="${m.id}">${glyphSvg(m.type,18)}<div class="name">${TYPES[m.type].name}${m.count>1?' ×'+m.count:''}${showDir(m)?' → '+dirName(m.heading):''}<br><small>${esc(whereIs(...posOf(m)))}${m.note?' · '+esc(m.note):''}</small></div><small>${fmtTime(m.updated_at)}</small></div>`).join('')
     :`<div class="empty">${ADMIN?'Обери тип на панелі зверху і клікни по карті.':'Наразі цілей не зафіксовано'}</div>`;
   $('objList').querySelectorAll('.row').forEach(el=>el.onclick=()=>{const m=D.threats.find(x=>x.id===el.dataset.id);if(!m)return;if(ADMIN)setMode('select');select(m.id);
-    const p=pr(m.lon,m.lat);const kk=Math.max(k,4);svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity.translate(W/2-p[0]*kk,H/2-p[1]*kk).scale(kk));
+    const p=pr(...posOf(m));const kk=Math.max(k,4);svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity.translate(W/2-p[0]*kk,H/2-p[1]*kk).scale(kk));
     if(innerWidth<=820&&!ADMIN){$('side').classList.add('collapsed');}});
   // стрічка
   $('feed').innerHTML=D.posts.length?D.posts.map(p=>{const kd=KINDS[p.kind]||KINDS.info;return `<div class="post" style="border-left-color:${kd.color}"><div class="pm"><span class="dot" style="background:${kd.color}"></span>${fmtTime(p.created_at)} · ${kd.name}${ADMIN?`<button class="x" data-p="${p.id}" title="Видалити">✕</button>`:''}</div>${esc(p.text)}</div>`;}).join('')
@@ -580,6 +646,41 @@ function notifyChanges(){
   if(al)beep(660,3);else if(threat)beep(990,2);else if(post)beep(800,1);
 }
 
+/* ---------- Моя точка, зона, рух ---------- */
+function renderHome(){
+  const h=prefs.home;gHome.selectAll('*').remove();if(!h)return;
+  const r=prefs.zoneKm||25;const circ=d3.geoCircle().center([h.lon,h.lat]).radius(r/111.2)();
+  gHome.append('path').attr('class','zone').attr('d',gpath(circ)).attr('stroke-width',1.5/k).attr('stroke-dasharray',`${6/k} ${4/k}`);
+  const p=pr(h.lon,h.lat);
+  gHome.append('circle').attr('class','homedot').attr('cx',p[0]).attr('cy',p[1]).attr('r',5/k).attr('stroke-width',2/k);
+  gHome.append('text').attr('class','homelbl').attr('x',p[0]+8/k).attr('y',p[1]+4/k).attr('font-size',11/k).style('stroke-width',(3/k)+'px').text(h.name||'Моя точка');
+}
+const inZone=new Set();let zoneInit=false;
+function checkZone(){
+  const zb=$('zoneBanner');if(!zb)return;
+  if(!prefs.home){zb.style.display='none';inZone.clear();return;}
+  const r=prefs.zoneKm||25;const list=[];let entered=false;
+  D.threats.forEach(m=>{const t=TYPES[m.type];if(!t||m.type==='explosion'||m.type==='pvo')return;const e=etaInfo(m);if(!e)return;
+    if(e.dist<=r){list.push({m,e});if(!inZone.has(m.id)){inZone.add(m.id);if(zoneInit)entered=true;}}else inZone.delete(m.id);});
+  zoneInit=true;
+  if(!list.length){zb.style.display='none';return;}
+  list.sort((a,b)=>a.e.dist-b.e.dist);
+  zb.style.display='block';
+  zb.innerHTML='⚠ У твоїй зоні: '+list.slice(0,3).map(x=>`<b>${TYPES[x.m.type].short}${x.m.count>1?' ×'+x.m.count:''}</b> ${Math.round(x.e.dist)} км${x.e.eta!=null?' (~'+Math.max(1,Math.round(x.e.eta))+' хв)':''}`).join(' · ')+(list.length>3?` і ще ${list.length-3}`:'');
+  if(entered&&prefs.zoneAlert!==false)beep(520,4);
+}
+function setHome(lon,lat,name){prefs.home={lon,lat,name:name||'Моя точка'};savePrefs();inZone.clear();zoneInit=false;renderHomeUI();renderMarkers();checkZone();renderPopup(true);}
+function openHomeSection(){const sd=$('side');if(sd)sd.classList.remove('collapsed');const h=$('homeSec');if(h)h.scrollIntoView({behavior:'smooth',block:'start'});}
+function renderHomeUI(){const t=$('homeTxt');if(!t)return;
+  t.textContent=prefs.home?`📍 ${prefs.home.name||'Моя точка'} · зона ${prefs.zoneKm||25} км`:'Точку не обрано';}
+setInterval(()=>{
+  if(dragging)return;
+  if(D.threats.some(moving))renderMarkers();
+  if(followId){const m=D.threats.find(x=>x.id===followId);if(m)centerOn(m,false);else followId=null;}
+  if(selected){const m=D.threats.find(x=>x.id===selected);const box=$('popup');if(m&&box){const l=box.querySelector('.live');if(l)l.innerHTML=liveHtml(m);}}
+  if(!ADMIN)checkZone();
+},1000);
+
 /* ---------- Інтерфейс перегляду ---------- */
 function initViewer(){
   const sel=$('regionSel');
@@ -587,12 +688,26 @@ function initViewer(){
   sel.value=prefs.region||'';sel.onchange=()=>{prefs.region=sel.value;savePrefs();renderLists();};
   const sb=$('soundBtn');const paint=()=>{sb.classList.toggle('on',!!prefs.sound);sb.textContent=prefs.sound?'🔔':'🔕';sb.title=prefs.sound?'Звук увімкнено':'Увімкнути звук';};
   paint();sb.onclick=()=>{prefs.sound=!prefs.sound;savePrefs();paint();if(prefs.sound)beep(880,1);};
+  // моя точка
+  const hc=$('homeCity');hc.innerHTML='<option value="">Обрати місто…</option>'+cities.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('');
+  hc.onchange=()=>{const c=cities[+hc.value];if(c)setHome(c.lon,c.lat,c.name);hc.value='';};
+  $('homeGps').onclick=()=>{if(!navigator.geolocation){toast('Геолокація недоступна в цьому браузері');return;}
+    $('homeGps').disabled=true;navigator.geolocation.getCurrentPosition(p=>{$('homeGps').disabled=false;setHome(p.coords.longitude,p.coords.latitude,'Я тут');},
+      err=>{$('homeGps').disabled=false;toast('Не вдалося визначити місце: '+(err.code===1?'доступ заборонено':'спробуй ще раз'));},{enableHighAccuracy:true,timeout:15000});};
+  $('homePick').onclick=()=>{mode='pick';svg.style('cursor','crosshair');showHint('Клікни на карті, де ти знаходишся',8000);if(innerWidth<=820)$('side').classList.add('collapsed');};
+  svg.on('click.pick',e=>{if(mode!=='pick')return;const p=d3.pointer(e,zg.node());const ll=inv(p[0],p[1]);mode='view';svg.style('cursor',null);showHint();
+    const w=whereObj(ll[0],ll[1]);setHome(ll[0],ll[1],nearestCity(ll[0],ll[1]).replace(/^біля м\. /,'')||rLabel(w.rid).split(',')[0]);});
+  $('homeClear').onclick=()=>{prefs.home=null;savePrefs();renderHomeUI();renderMarkers();checkZone();renderPopup(true);};
+  const zr=$('zoneR');zr.value=String(prefs.zoneKm||25);zr.onchange=()=>{prefs.zoneKm=+zr.value;savePrefs();inZone.clear();zoneInit=false;renderHomeUI();renderMarkers();checkZone();};
+  const za=$('zoneAlert');za.checked=prefs.zoneAlert!==false;za.onchange=()=>{prefs.zoneAlert=za.checked;savePrefs();};
+  const ex=$('extrapOn');ex.checked=prefs.extrap!==false;ex.onchange=()=>{prefs.extrap=ex.checked;savePrefs();renderAll(true);};
+  renderHomeUI();
 }
 
 /* ---------- Інтерфейс адміна ---------- */
-let placeRel=2;
+let placeRel=2,placeSub='shahed';
 function initAdmin(){
-  const MODES=[['select','Вибір'],['alert','Тривога'],...Object.keys(TYPES).map(x=>[x,TYPES[x].short])];
+  const MODES=[['select','Вибір'],['alert','Тривога'],...Object.keys(TYPES).filter(x=>!DRONES.includes(x)||x==='shahed').map(x=>[x,TYPES[x].short])];
   const tb=d3.select('#toolbar');
   MODES.forEach(([m,label],i)=>{if(i===2)tb.append('div').attr('class','sep');
     tb.append('button').attr('class','tool').attr('data-m',m).attr('title',TYPES[m]?TYPES[m].name:label).html(glyphSvg(m)+`<span class="lbl">${label}</span>`).on('click',()=>setMode(m));});
@@ -609,17 +724,19 @@ function initAdmin(){
     const dx=(p[0]-s[0])*k,dy=(p[1]-s[1])*k;let heading=null;
     if(TYPES[mode].dir&&Math.hypot(dx,dy)>14)heading=(Math.atan2(dx,-dy)*180/Math.PI+360)%360;
     const ll=inv(s[0],s[1]);
-    const m={id:uid(),type:mode,lon:ll[0],lat:ll[1],heading,count:1,note:'',reliability:placeRel,trail:[],created_at:now(),updated_at:now()};
+    const m={id:uid(),type:mode==='shahed'?placeSub:mode,lon:ll[0],lat:ll[1],heading,count:1,note:'',reliability:placeRel,trail:[],created_at:now(),updated_at:now()};
     D.threats.push(m);renderAll();saveThreat(m,0);
   });
   // панель параметрів (тривога / достовірність)
   const ob=$('optbar');
   ob.innerHTML=`<span class="grp" data-g="alert"><button class="ab" data-l="2"><span class="dot" style="background:var(--red)"></span>Тривога</button><button class="ab" data-l="1"><span class="dot" style="background:var(--yellow)"></span>Загроза</button><button class="ab" data-l="0"><span class="dot" style="background:var(--green)"></span>Відбій</button><span class="sep"></span><button class="ab" data-s="raion">Район</button><button class="ab" data-s="oblast">Вся область</button></span>
+   <span class="grp" data-g="sub"><span class="lbl2">Модифікація:</span>${DRONES.map(x=>`<button class="ab" data-sub="${x}">${x==='shahed'?'не уточнено':TYPES[x].short}</button>`).join('')}<span class="sep"></span></span>
    <span class="grp" data-g="place"><span class="lbl2">Достовірність:</span><button class="ab" data-r="1">низька</button><button class="ab" data-r="2">середня</button><button class="ab" data-r="3">висока</button></span>`;
   ob.querySelectorAll('.grp').forEach(g=>g.style.cssText='display:flex;gap:6px;align-items:center;flex-wrap:wrap');
   ob.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{alertLvl=+b.dataset.l;paintOpt();showHint();});
   ob.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{alertScope=b.dataset.s;paintOpt();showHint();});
   ob.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{placeRel=+b.dataset.r;paintOpt();});
+  ob.querySelectorAll('[data-sub]').forEach(b=>b.onclick=()=>{placeSub=b.dataset.sub;paintOpt();showHint(`Клікни, щоб поставити «${TYPES[placeSub].name}». Потягни — щоб задати курс`);});
   // публікація
   let kind='info';const kb=$('kinds');
   kb.innerHTML=Object.keys(KINDS).map(x=>`<button data-k="${x}"><span class="dot" style="background:${KINDS[x].color}"></span>${KINDS[x].name}</button>`).join('');
@@ -651,7 +768,9 @@ function paintOpt(){const ob=$('optbar');if(!ob)return;
   ob.querySelector('[data-g=place]').style.display=mode in TYPES?'flex':'none';
   ob.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('active',+b.dataset.l===alertLvl));
   ob.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('active',b.dataset.s===alertScope));
-  ob.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('active',+b.dataset.r===placeRel));}
+  ob.querySelectorAll('[data-r]').forEach(b=>b.classList.toggle('active',+b.dataset.r===placeRel));
+  ob.querySelector('[data-g=sub]').style.display=mode==='shahed'?'flex':'none';
+  ob.querySelectorAll('[data-sub]').forEach(b=>b.classList.toggle('active',b.dataset.sub===placeSub));}
 function setMode(m){mode=m;d3.selectAll('.tool').classed('active',function(){return this.dataset.m===m;});
   svg.style('cursor',m==='select'?'grab':m==='alert'?'pointer':'crosshair');paintOpt();showHint();}
 function confirmBox(title,ok){const o=$('confirm');$('cTitle').textContent=title;o.style.display='flex';
