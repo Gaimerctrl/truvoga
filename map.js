@@ -111,7 +111,12 @@ function savePrefs(){try{localStorage.setItem('airmap_prefs',JSON.stringify(pref
 // D.threats: [{id,type,lon,lat,heading,count,note,reliability,trail,created_at,updated_at}]
 // D.alerts: {rid:{l:1|2,t:ms}}   D.posts: [{id,text,kind,created_at}]
 let D={threats:[],alerts:{},posts:[]};
-const backend=(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase)?supaBackend():localBackend();
+let cfgError='';
+if(CFG.SUPABASE_URL){CFG.SUPABASE_URL=String(CFG.SUPABASE_URL).trim().replace(/\/+$/,'');if(!/^https?:\/\//i.test(CFG.SUPABASE_URL))CFG.SUPABASE_URL='https://'+CFG.SUPABASE_URL;}
+if(CFG.SUPABASE_ANON_KEY){CFG.SUPABASE_ANON_KEY=String(CFG.SUPABASE_ANON_KEY).trim();if(!/^(eyJ|sb_publishable_)/.test(CFG.SUPABASE_ANON_KEY))cfgError='Ключ у config.js не схожий на anon / publishable ключ Supabase (він починається з eyJ… або sb_publishable_…).';}
+let backend;
+try{backend=(CFG.SUPABASE_URL&&CFG.SUPABASE_ANON_KEY&&window.supabase)?supaBackend():localBackend();}
+catch(e){console.error(e);cfgError='Помилка налаштувань Supabase: '+(e.message||e);backend=localBackend();}
 
 function localBackend(){
   const KEY='airmap_demo_v1';
@@ -552,7 +557,7 @@ function postMsg(text,kind){text=String(text).trim().slice(0,1000);if(!text)retu
 let first=true,prevAlerts={},prevThreatIds=new Set(),prevPostIds=new Set();
 async function refresh(){
   if(dragging)return;
-  try{const d=await backend.load();D=d;}catch(e){console.error(e);setConn('bad');return;}
+  try{const d=await backend.load();D=d;}catch(e){console.error(e);setConn('bad');if(first)toast('Не вдалося завантажити дані з бази: '+(e.message||e));first=false;return;}
   if(selected&&!D.threats.find(x=>x.id===selected))selected=null;
   if(!ADMIN&&!first)notifyChanges();
   prevAlerts=Object.assign({},D.alerts);prevThreatIds=new Set(D.threats.map(t=>t.id));prevPostIds=new Set(D.posts.map(p=>p.id));first=false;
@@ -656,6 +661,7 @@ function confirmBox(title,ok){const o=$('confirm');$('cTitle').textContent=title
 const st=$('sideToggle');if(st)st.onclick=()=>$('side').classList.toggle('collapsed');
 if(innerWidth<=820&&!ADMIN&&$('side'))$('side').classList.add('collapsed');
 if(backend.kind==='local'&&$('demo'))$('demo').style.display='block';
+if(cfgError){const d=$('demo');if(d){d.style.display='block';d.textContent='⚠ '+cfgError+' Перевір config.js (див. інструкцію).';}console.error(cfgError);}
 setInterval(()=>{if(!dragging){renderLists();renderPopup(false);}},15000);
 
 async function start(){
