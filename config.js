@@ -3,6 +3,6 @@
 // Поки поля порожні, сайт працює в демо-режимі: дані зберігаються лише в твоєму браузері.
 window.APP_CONFIG = {
   SITE_NAME: "Радар UA",
-  SUPABASE_URL: "gdxprbovnbyxsldnmxvn.supabase.co",       // напр. "https://abcdefgh.supabase.co"
-  SUPABASE_ANON_KEY: "NZKatRyj8qn7ykLL-Su5FA_7_TFBIEW"   // довгий ключ anon public (його можна показувати публічно)
+  SUPABASE_URL: "https://gdxprbovnbyxsldnmxvn.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_NZKatRyj8qn7ykLL-Su5FA_7_TFBIEW"   // довгий ключ anon public (його можна показувати публічно)
 };
