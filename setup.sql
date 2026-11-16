@@ -35,8 +35,10 @@ create table if not exists public.threats (
 create table if not exists public.alerts (
   rid        text primary key,
   level      smallint not null check (level in (1, 2)),   -- 1 загроза, 2 тривога
-  started_at timestamptz not null default now()
+  started_at timestamptz not null default now(),
+  source     text not null default 'manual'                -- 'manual' з адмінки, 'auto' з alerts.in.ua
 );
+alter table public.alerts add column if not exists source text not null default 'manual';
 
 -- 4) Стрічка повідомлень
 create table if not exists public.posts (

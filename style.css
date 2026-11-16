@@ -174,3 +174,24 @@ textarea{width:100%;resize:vertical}
 .lv:hover{border-color:#5a6270}
 .lv.r:hover{background:#5c171b}.lv.y:hover{background:#5a4a0c}.lv.g:hover{background:#163b22;color:#fff}
 .lv.r.on{background:#7a1e22;border-color:var(--red)}.lv.y.on{background:#6e5a12;border-color:var(--yellow)}
+/* силуети цілей, прогноз, моя точка (як у dimap) */
+.marker .tail{stroke-width:2.2;stroke-linecap:round;opacity:.55;fill:none}
+.marker.sil .glyph{filter:drop-shadow(0 0 2px rgba(0,0,0,.9))}
+.forecast text{fill:#fff;paint-order:stroke;stroke:#0b1119;pointer-events:none}
+.home .zone{fill:rgba(59,130,246,.08);stroke:#3b82f6}
+.home .homedot{fill:#3b82f6;stroke:#fff}
+.home .homelbl{fill:#cfe0ff;paint-order:stroke;stroke:#0b1119;font-weight:600}
+#zoneBanner{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:4;background:#5c171b;border:1px solid var(--red);color:#fff;padding:7px 14px;border-radius:999px;font-size:13px;max-width:92%;box-shadow:0 6px 24px rgba(0,0,0,.5);animation:bann 2s ease-in-out infinite}
+#popup .pclose{position:absolute;top:8px;right:8px;font-size:15px}
+#popup .ptitle{font-size:17px;margin:0 22px 4px 0;line-height:1.25}
+#popup .pcount{color:var(--muted);font-weight:500}
+#popup .psil{display:flex;justify-content:flex-start;margin:4px 0 2px}
+#popup .pdesc{color:#c9d1d9;font-size:12.5px;margin-bottom:6px}
+#popup .pspeed{font-size:13px;margin-bottom:6px}
+#popup .peta{margin-top:8px;padding:7px 9px;border-radius:9px;background:var(--panel2);font-size:13px}
+#popup .peta.near{background:#5c171b;border:1px solid var(--red)}
+#popup .pnote{margin-top:8px;color:var(--muted);font-size:12px}
+@media (max-width:820px){#zoneBanner{top:6px;font-size:12px;border-radius:10px}}
+#popup .f>span.rel{width:auto}
+@media (max-width:820px){#popup .psil,#popup .pdesc{display:none}#popup{max-height:60%;overflow:auto}}
+.autotag{font-size:10.5px;padding:1px 5px;border-radius:5px;background:#1b2a45;color:#9ec1ff;margin-left:4px}

@@ -157,7 +157,7 @@ function supaBackend(){
     kind:'supabase',
     async load(){
       const [t,a,p]=await Promise.all([sb.from('threats').select('*'),sb.from('alerts').select('*'),sb.from('posts').select('*').order('created_at',{ascending:false}).limit(60)]);
-      const alerts={};chk(a).forEach(r=>alerts[r.rid]={l:r.level,t:ts(r.started_at)});
+      const alerts={};chk(a).forEach(r=>alerts[r.rid]={l:r.level,t:ts(r.started_at),src:r.source||'manual'});
       return {threats:chk(t).map(r=>Object.assign({},r,{trail:r.trail||[]})),alerts,posts:chk(p)};
     },
     subscribe(f,status){
@@ -174,7 +174,7 @@ function supaBackend(){
     async clearThreats(){chk(await sb.from('threats').delete().not('id','is',null));},
     async setAlerts(ch){
       const up=[],del=[];const iso=new Date().toISOString();
-      Object.keys(ch).forEach(r=>ch[r]?up.push({rid:r,level:ch[r],started_at:iso}):del.push(r));
+      Object.keys(ch).forEach(r=>ch[r]?up.push({rid:r,level:ch[r],started_at:iso,source:'manual'}):del.push(r));
       if(up.length)chk(await sb.from('alerts').upsert(up));
       if(del.length)chk(await sb.from('alerts').delete().in('rid',del));
     },
@@ -581,6 +581,7 @@ function renderLists(){
     :'<div class="empty">Повідомлень поки немає</div>';
   if(ADMIN)$('feed').querySelectorAll('[data-p]').forEach(el=>el.onclick=()=>{D.posts=D.posts.filter(p=>p.id!==el.dataset.p);renderLists();backend.deletePosts([el.dataset.p]).catch(fail);});
   $('updated').textContent=fmtTime(t0);
+  const at=$('autoAttr');if(at)at.style.display=Object.values(D.alerts).some(a=>a.src==='auto')?'block':'none';
 }
 let openOblast=null;
 function renderObPanel(sts){
@@ -590,7 +591,7 @@ function renderObPanel(sts){
   const btns=(attr,val)=>`<button class="lv r" ${attr}="${val}" data-v="2" title="Тривога">🔴</button><button class="lv y" ${attr}="${val}" data-v="1" title="Загроза">🟡</button><button class="lv g" ${attr}="${val}" data-v="0" title="Відбій">✕</button>`;
   let h=`<div class="obh"><b>${title}</b><span class="obst">${st.n?(st.full===2?'🔴 тривога':st.full===1?'🟡 загроза':st.n+' з '+st.total+' р-нів')+' · '+fmtDur(t0-st.t):'тривоги немає'}</span><button class="x" data-close="1" title="Закрити">✕</button></div>`;
   h+=`<div class="obrow all"><span class="name">${oid===KYIV.id?'Усе місто':'Вся область'}</span>${btns('data-all',oid)}</div>`;
-  if(oid!==KYIV.id)h+=RBY[oid].map(r=>{const l=lvl(r);return `<div class="obrow"><span class="dot" style="background:${l===2?'var(--red)':l===1?'var(--yellow)':'#3a404a'}"></span><span class="name">${RN[r].name}${l?` <small>${fmtDur(t0-D.alerts[r].t)}</small>`:''}</span>${btns('data-r',r)}</div>`;}).join('');
+  if(oid!==KYIV.id)h+=RBY[oid].map(r=>{const l=lvl(r);return `<div class="obrow"><span class="dot" style="background:${l===2?'var(--red)':l===1?'var(--yellow)':'#3a404a'}"></span><span class="name">${RN[r].name}${l?` <small>${fmtDur(t0-D.alerts[r].t)}</small>`:''}${D.alerts[r]&&D.alerts[r].src==='auto'?' <span class="autotag" title="Автоматично з alerts.in.ua">авто</span>':''}</span>${btns('data-r',r)}</div>`;}).join('');
   box.innerHTML=h;box.style.display='block';
   box.querySelector('[data-close]').onclick=()=>{openOblast=null;renderLists();};
   box.querySelectorAll('[data-all]').forEach(b=>b.onclick=()=>{const v=+b.dataset.v;const rids=ridsOf(oid);
