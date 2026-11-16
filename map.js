@@ -634,17 +634,163 @@ function setConn(s){const c=$('conn');if(!c)return;c.className='chip '+(s==='ok'
   c.querySelector('.txt').textContent=s==='local'?'демо-режим':s==='ok'?'онлайн':s==='bad'?'немає зʼєднання':'підключення…';}
 
 /* ---------- Звук (перегляд) ---------- */
-let actx=null;
-function beep(freq,times){if(!prefs.sound)return;try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
-  for(let i=0;i<times;i++){const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=freq;o.type='sine';o.connect(g);g.connect(actx.destination);
-    const t=actx.currentTime+i*0.32;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.25,t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+0.25);o.start(t);o.stop(t+0.27);}}catch(e){}}
+/* ---------- Звуки (синтез у браузері, без записів) ---------- */
+const SOUNDS={
+  siren:{name:'Повітряна тривога (сирена)',grp:'alert',pri:9},
+  allclear:{name:'Відбій тривоги',grp:'allclear',pri:2},
+  shahed:{name:'Шахед / дрон',grp:'drone',pri:4},
+  jetdrone:{name:'Реактивний дрон (Герань-3/4/5)',grp:'missile',pri:6},
+  missile:{name:'Крилата ракета',grp:'missile',pri:7},
+  ballistic:{name:'Балістика',grp:'ballistic',pri:10},
+  aviation:{name:'Авіація / МіГ-31К',grp:'missile',pri:5},
+  explosion:{name:'Вибух',grp:'explosion',pri:5},
+  zone:{name:'Ціль у моїй зоні',grp:'zone',pri:8},
+  post:{name:'Повідомлення «Загроза»',grp:'post',pri:3},
+};
+const SND_GROUPS={alert:'Тривога',allclear:'Відбій',drone:'Шахеди й дрони',missile:'Ракети й авіація',ballistic:'Балістика',explosion:'Вибухи',zone:'Ціль у зоні',post:'Повідомлення'};
+const TYPE_SOUND={shahed:'shahed',shahed136:'shahed',gerbera:'shahed',fpv:'shahed',recon:'shahed',jet:'jetdrone',geran4:'jetdrone',geran5:'jetdrone',cruise:'missile',ballistic:'ballistic',aviation:'aviation',kab:'missile',explosion:'explosion'};
+const A={ctx:null,out:null,busyUntil:0,busyPri:0};
+function audio(){
+  if(!A.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;A.ctx=new C();
+    const comp=A.ctx.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=6;
+    A.out=A.ctx.createGain();A.out.connect(comp);comp.connect(A.ctx.destination);}
+  A.out.gain.value=prefs.vol==null?0.7:prefs.vol;
+  if(A.ctx.state==='suspended')A.ctx.resume();return A.ctx;}
+function noise(ctx,sec){const b=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*sec),ctx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=ctx.createBufferSource();s.buffer=b;return s;}
+function shaper(ctx,amt){const w=ctx.createWaveShaper();const n=1024,c=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;c[i]=(1+amt)*x/(1+amt*Math.abs(x));}w.curve=c;return w;}
+function env(ctx,g,t,a,hold,rel,peak){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.setValueAtTime(peak,t+a+hold);g.gain.exponentialRampToValueAtTime(0.0001,t+a+hold+rel);}
+const SYNTH={
+  siren(ctx,o,t){ // механічна сирена: наростання, тримання, спад — двічі
+    const dur=9;const g=ctx.createGain();const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;const ws=shaper(ctx,4);
+    [1,1.5,2.01].forEach((m,i)=>{const os=ctx.createOscillator();os.type=i===0?'sawtooth':'square';
+      const f=os.frequency;f.setValueAtTime(140*m,t);
+      for(let c=0;c<2;c++){const b=t+c*4.5;f.linearRampToValueAtTime(140*m,b);f.exponentialRampToValueAtTime(620*m,b+2.2);f.setValueAtTime(620*m,b+2.6);f.exponentialRampToValueAtTime(180*m,b+4.4);}
+      const og=ctx.createGain();og.gain.value=i===0?0.5:0.18;os.connect(og);og.connect(ws);os.start(t);os.stop(t+dur);});
+    const trem=ctx.createOscillator(),tg=ctx.createGain();trem.frequency.value=7;tg.gain.value=0.12;trem.connect(tg);tg.connect(g.gain);trem.start(t);trem.stop(t+dur);
+    ws.connect(lp);lp.connect(g);g.connect(o);env(ctx,g,t,0.4,dur-1.4,1,0.55);return dur;},
+  shahed(ctx,o,t){ // двотактний «мопед», що пролітає повз (доплер)
+    const dur=5;const g=ctx.createGain();const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=900;bp.Q.value=0.8;
+    const am=ctx.createGain();am.gain.value=0.6;const lfo=ctx.createOscillator();lfo.type='square';lfo.frequency.setValueAtTime(34,t);lfo.frequency.linearRampToValueAtTime(29,t+dur);
+    const lg=ctx.createGain();lg.gain.value=0.4;lfo.connect(lg);lg.connect(am.gain);
+    [[110,'sawtooth',0.5],[220,'sawtooth',0.25],[55,'square',0.2]].forEach(([fr,ty,v])=>{const os=ctx.createOscillator();os.type=ty;
+      os.frequency.setValueAtTime(fr*1.08,t);os.frequency.setValueAtTime(fr*1.08,t+dur*0.45);os.frequency.exponentialRampToValueAtTime(fr*0.86,t+dur*0.62);
+      const og=ctx.createGain();og.gain.value=v;os.connect(og);og.connect(am);os.start(t);os.stop(t+dur);});
+    const ns=noise(ctx,dur),nf=ctx.createBiquadFilter();nf.type='highpass';nf.frequency.value=1500;const ng=ctx.createGain();ng.gain.value=0.08;ns.connect(nf);nf.connect(ng);ng.connect(am);ns.start(t);
+    lfo.start(t);lfo.stop(t+dur);am.connect(shaper(ctx,3)).connect(bp);bp.connect(g);g.connect(o);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(2.2,t+dur*0.48);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);return dur;},
+  jetdrone(ctx,o,t){ // реактивний свист + рев
+    const dur=4;const g=ctx.createGain();const ns=noise(ctx,dur);const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.Q.value=3;
+    bp.frequency.setValueAtTime(1200,t);bp.frequency.exponentialRampToValueAtTime(4200,t+dur*0.5);bp.frequency.exponentialRampToValueAtTime(900,t+dur);
+    ns.connect(bp);bp.connect(g);ns.start(t);
+    const os=ctx.createOscillator();os.type='sine';os.frequency.setValueAtTime(2400,t);os.frequency.linearRampToValueAtTime(3200,t+dur*0.5);os.frequency.exponentialRampToValueAtTime(1500,t+dur);
+    const og=ctx.createGain();og.gain.value=0.15;os.connect(og);og.connect(g);os.start(t);os.stop(t+dur);
+    g.connect(o);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(1.8,t+dur*0.5);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);return dur;},
+  missile(ctx,o,t){ // наростаючий свист і низький гул
+    const dur=4.5;const g=ctx.createGain();const ns=noise(ctx,dur);const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.Q.value=6;
+    bp.frequency.setValueAtTime(400,t);bp.frequency.exponentialRampToValueAtTime(3500,t+dur*0.7);bp.frequency.exponentialRampToValueAtTime(700,t+dur);
+    ns.connect(bp);bp.connect(g);ns.start(t);
+    const rb=ctx.createOscillator();rb.type='sawtooth';rb.frequency.setValueAtTime(45,t);rb.frequency.linearRampToValueAtTime(70,t+dur);
+    const rl=ctx.createBiquadFilter();rl.type='lowpass';rl.frequency.value=160;const rg=ctx.createGain();rg.gain.value=0.6;rb.connect(rl);rl.connect(rg);rg.connect(g);rb.start(t);rb.stop(t+dur);
+    g.connect(o);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(1,t+dur*0.75);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);return dur;},
+  ballistic(ctx,o,t){ // швидкий тривожний сигнал + виття
+    const dur=5;const g=ctx.createGain();g.connect(o);g.gain.value=0.5;
+    for(let i=0;i<20;i++){const os=ctx.createOscillator();os.type='square';os.frequency.value=i%2?1250:900;const og=ctx.createGain();os.connect(og);og.connect(g);
+      const b=t+i*0.13;env(ctx,og,b,0.005,0.08,0.03,0.6);os.start(b);os.stop(b+0.13);}
+    const w=ctx.createOscillator();w.type='sawtooth';w.frequency.setValueAtTime(300,t+2.6);w.frequency.exponentialRampToValueAtTime(1100,t+4.2);w.frequency.exponentialRampToValueAtTime(400,t+dur);
+    const wg=ctx.createGain();w.connect(shaper(ctx,5)).connect(wg);wg.connect(g);env(ctx,wg,t+2.6,0.1,1.5,0.7,0.6);w.start(t+2.6);w.stop(t+dur);return dur;},
+  aviation(ctx,o,t){ // низький рев літака
+    const dur=5;const g=ctx.createGain();const ns=noise(ctx,dur);const lp=ctx.createBiquadFilter();lp.type='lowpass';
+    lp.frequency.setValueAtTime(250,t);lp.frequency.exponentialRampToValueAtTime(1400,t+dur*0.5);lp.frequency.exponentialRampToValueAtTime(300,t+dur);
+    ns.connect(lp);lp.connect(g);ns.start(t);
+    const hum=ctx.createOscillator();hum.type='triangle';hum.frequency.setValueAtTime(70,t);hum.frequency.linearRampToValueAtTime(95,t+dur*0.5);hum.frequency.linearRampToValueAtTime(60,t+dur);
+    const hg=ctx.createGain();hg.gain.value=0.5;hum.connect(hg);hg.connect(g);hum.start(t);hum.stop(t+dur);
+    g.connect(o);g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(1,t+dur*0.5);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);return dur;},
+  explosion(ctx,o,t){ // удар + розкат
+    const dur=3;const g=ctx.createGain();const ns=noise(ctx,dur);const lp=ctx.createBiquadFilter();lp.type='lowpass';
+    lp.frequency.setValueAtTime(3000,t);lp.frequency.exponentialRampToValueAtTime(90,t+dur);ns.connect(lp);lp.connect(g);ns.start(t);
+    const th=ctx.createOscillator();th.type='sine';th.frequency.setValueAtTime(110,t);th.frequency.exponentialRampToValueAtTime(28,t+0.8);
+    const tg=ctx.createGain();th.connect(tg);tg.connect(o);env(ctx,tg,t,0.005,0.05,0.9,0.9);th.start(t);th.stop(t+1.2);
+    g.connect(shaper(ctx,6)).connect(o);g.gain.setValueAtTime(0.7,t);g.gain.exponentialRampToValueAtTime(0.0001,t+dur);return dur;},
+  zone(ctx,o,t){ // три різкі сигнали, потім дрон
+    const g=ctx.createGain();g.connect(o);
+    for(let i=0;i<3;i++){const os=ctx.createOscillator();os.type='square';os.frequency.setValueAtTime(980,t+i*0.35);os.frequency.linearRampToValueAtTime(700,t+i*0.35+0.25);
+      const og=ctx.createGain();os.connect(og);og.connect(g);env(ctx,og,t+i*0.35,0.01,0.18,0.08,0.5);os.start(t+i*0.35);os.stop(t+i*0.35+0.3);}
+    return 1.1+SYNTH.shahed(ctx,o,t+1.1);},
+  allclear(ctx,o,t){ // спокійний висхідний акорд
+    const g=ctx.createGain();g.connect(o);[523.25,659.25,783.99,1046.5].forEach((f,i)=>{const os=ctx.createOscillator();os.type='sine';os.frequency.value=f;
+      const og=ctx.createGain();os.connect(og);og.connect(g);env(ctx,og,t+i*0.22,0.02,0.25,1.2,0.35);os.start(t+i*0.22);os.stop(t+i*0.22+1.6);});return 2.4;},
+  post(ctx,o,t){const g=ctx.createGain();g.connect(o);[880,1320].forEach((f,i)=>{const os=ctx.createOscillator();os.type='triangle';os.frequency.value=f;const og=ctx.createGain();os.connect(og);og.connect(g);
+      env(ctx,og,t+i*0.18,0.01,0.1,0.4,0.5);os.start(t+i*0.18);os.stop(t+i*0.18+0.6);});return 0.9;},
+};
+function sndOn(name){const gr=SOUNDS[name].grp;const s=prefs.snd||{};return s[gr]!==false;}
+function playSound(name,force){
+  if(!force&&(!prefs.sound||!sndOn(name)))return;
+  const ctx=audio();if(!ctx||!SYNTH[name])return;
+  const pri=SOUNDS[name].pri;const nowT=ctx.currentTime;
+  if(!force&&nowT<A.busyUntil&&pri<=A.busyPri)return; // не перебивати важливіший звук
+  try{const dur=SYNTH[name](ctx,A.out,nowT+0.05);A.busyUntil=nowT+dur;A.busyPri=pri;return dur;}catch(e){console.warn(e);}
+  return 0;
+}
+/* ---------- Голосові оголошення (синтез мовлення браузера) ---------- */
+const HAS_TTS='speechSynthesis' in window;
+function allVoices(){return HAS_TTS?speechSynthesis.getVoices():[];}
+function ukVoices(){return allVoices().filter(v=>/^uk/i.test(v.lang));}
+function pickVoice(){const vs=allVoices();return vs.find(v=>v.voiceURI===prefs.voiceURI&&/^uk/i.test(v.lang))||ukVoices().sort((a,b)=>(/natural|online|google/i.test(b.name)?1:0)-(/natural|online|google/i.test(a.name)?1:0))[0];}
+let lastSpeak=0;
+function say(text,delayMs,force){
+  if(!HAS_TTS||!text)return;
+  if(!force&&(!prefs.sound||prefs.voice===false))return;
+  const v=pickVoice();if(!v)return;
+  setTimeout(()=>{
+    if(!force&&speechSynthesis.pending&&Date.now()-lastSpeak>60000)speechSynthesis.cancel(); // не накопичувати старі оголошення
+    const u=new SpeechSynthesisUtterance(text);u.voice=v;u.lang=v.lang;u.rate=prefs.vrate||1;u.pitch=0.9;u.volume=1;
+    speechSynthesis.speak(u);lastSpeak=Date.now();},delayMs||0);
+}
+const DIR_WORDS=['північ','північний схід','схід','південний схід','південь','південний захід','захід','північний захід'];
+function dirWords(h){return DIR_WORDS[Math.round(h/45)%8];}
+function placeName(oid){return oid===KYIV.id?'місто Київ':oid==='krm'?'Автономна Республіка Крим':NAMES[oid]+' область';}
+function plural3(n,a,b,c){const m10=n%10,m100=n%100;return m10===1&&m100!==11?a:m10>=2&&m10<=4&&(m100<10||m100>=20)?b:c;}
+const SPOKEN={shahed:'Шахед',shahed136:'Шахед',gerbera:'дрон-імітатор Гербера',fpv:'ударний дрон',recon:'розвідувальний дрон',jet:'реактивний Шахед',geran4:'реактивна Герань-4',geran5:'реактивна Герань-5',
+  cruise:'крилата ракета',ballistic:'балістика',kab:'керовані авіабомби',aviation:'активність авіації',explosion:'вибух'};
+// звук + голос: спершу сигнал, потім оголошення
+function announce(sound,text){
+  if(!prefs.sound)return;
+  const groupOn=sndOn(sound);
+  const dur=groupOn?playSound(sound):0;
+  if(groupOn||prefs.voiceAlways)say(text,Math.round((dur||0)*1000)+300);
+}
+function beep(){playSound('post');}
 function inMyRegion(oid){return !prefs.region||prefs.region===oid;}
 function notifyChanges(){
-  let al=false,threat=false,post=false;
-  Object.keys(D.alerts).forEach(r=>{if(D.alerts[r].l===2&&(!prevAlerts[r]||prevAlerts[r].l!==2)){const oid=r===KYIV.id?r:RN[r]&&RN[r].oid;if(inMyRegion(oid))al=true;}});
-  D.threats.forEach(t=>{if(!prevThreatIds.has(t.id)&&DANGER_TYPES.includes(t.type)){if(!prefs.region||whereObj(t.lon,t.lat).oid===prefs.region||t.type==='aviation'||t.type==='ballistic')threat=true;}});
-  D.posts.forEach(p=>{if(!prevPostIds.has(p.id)&&p.kind==='danger')post=true;});
-  if(al)beep(660,3);else if(threat)beep(990,2);else if(post)beep(800,1);
+  const ev=[];
+  // нові тривоги (по областях)
+  const newRed=new Set();
+  Object.keys(D.alerts).forEach(r=>{if(D.alerts[r].l===2&&(!prevAlerts[r]||prevAlerts[r].l!==2)){const oid=r===KYIV.id?r:RN[r]&&RN[r].oid;if(oid&&inMyRegion(oid))newRed.add(oid);}});
+  if(newRed.size){const list=[...newRed];
+    ev.push({snd:'siren',text:'Увага! Повітряна тривога. '+(list.length<=3?list.map(placeName).join('. ')+'.':list.length+' '+plural3(list.length,'область','області','областей')+'.')+' Негайно пройдіть до укриття.'});}
+  // відбій
+  if(prefs.region){const was=ridsOf(prefs.region).some(r=>prevAlerts[r]&&prevAlerts[r].l===2),is=ridsOf(prefs.region).some(r=>D.alerts[r]&&D.alerts[r].l===2);
+    if(was&&!is)ev.push({snd:'allclear',text:'Відбій повітряної тривоги. '+placeName(prefs.region)+'.'});}
+  else if(Object.keys(prevAlerts).length&&!Object.keys(D.alerts).length)ev.push({snd:'allclear',text:'Відбій повітряної тривоги по всій країні.'});
+  // нові цілі
+  const byType={};
+  D.threats.forEach(t=>{if(prevThreatIds.has(t.id))return;const snd=TYPE_SOUND[t.type];if(!snd)return;
+    const p=posOf(t);const oid=whereObj(p[0],p[1]).oid;const everywhere=t.type==='ballistic'||t.type==='aviation';
+    if(!(everywhere||!prefs.region||oid===prefs.region))return;
+    (byType[t.type]=byType[t.type]||[]).push({t,oid});});
+  Object.keys(byType).forEach(type=>{const arr=byType[type];const n=arr.reduce((a,x)=>a+(x.t.count||1),0);const f=arr[0];
+    let text;
+    if(type==='ballistic')text='Загроза балістики! Негайно в укриття!';
+    else if(type==='aviation')text='Увага! Активність авіації. Можливі пуски ракет.';
+    else if(type==='explosion')text='Повідомляють про вибух. '+placeName(f.oid)+'.';
+    else{text='Увага! '+SPOKEN[type]+(n>1?', '+n+' '+plural3(n,'ціль','цілі','цілей'):'')+'. '+placeName(f.oid)+'.';
+      if(f.t.heading!=null&&f.t.reliability>=2)text+=' Курс на '+dirWords(f.t.heading)+'.';}
+    ev.push({snd:TYPE_SOUND[type],text});});
+  // повідомлення адміна з рівнем «Загроза» — зачитуємо
+  D.posts.forEach(p=>{if(!prevPostIds.has(p.id)&&p.kind==='danger')ev.push({snd:'post',text:'Увага! '+String(p.text).slice(0,220)});});
+  if(!ev.length)return;
+  ev.sort((a,b)=>SOUNDS[b.snd].pri-SOUNDS[a.snd].pri);
+  announce(ev[0].snd,ev.slice(0,2).map(e=>e.text).join(' '));
 }
 
 /* ---------- Моя точка, зона, рух ---------- */
@@ -668,7 +814,8 @@ function checkZone(){
   list.sort((a,b)=>a.e.dist-b.e.dist);
   zb.style.display='block';
   zb.innerHTML='⚠ У твоїй зоні: '+list.slice(0,3).map(x=>`<b>${TYPES[x.m.type].short}${x.m.count>1?' ×'+x.m.count:''}</b> ${Math.round(x.e.dist)} км${x.e.eta!=null?' (~'+Math.max(1,Math.round(x.e.eta))+' хв)':''}`).join(' · ')+(list.length>3?` і ще ${list.length-3}`:'');
-  if(entered&&prefs.zoneAlert!==false)beep(520,4);
+  if(entered&&prefs.zoneAlert!==false){const x=list[0];const e=x.e;
+    announce('zone','Увага! Ціль у вашій зоні. '+(SPOKEN[x.m.type]||TYPES[x.m.type].short)+', '+Math.round(e.dist)+' '+plural3(Math.round(e.dist),'кілометр','кілометри','кілометрів')+(e.eta!=null?', підліт приблизно '+Math.max(1,Math.round(e.eta))+' '+plural3(Math.max(1,Math.round(e.eta)),'хвилина','хвилини','хвилин'):'')+'. Пройдіть до укриття.');}
 }
 function setHome(lon,lat,name){prefs.home={lon,lat,name:name||'Моя точка'};savePrefs();inZone.clear();zoneInit=false;renderHomeUI();renderMarkers();checkZone();renderPopup(true);}
 function openHomeSection(){const sd=$('side');if(sd)sd.classList.remove('collapsed');const h=$('homeSec');if(h)h.scrollIntoView({behavior:'smooth',block:'start'});}
@@ -683,12 +830,34 @@ setInterval(()=>{
 },1000);
 
 /* ---------- Інтерфейс перегляду ---------- */
+function renderSoundUI(){
+  const box=$('soundSet');if(!box)return;const st=prefs.snd||{};
+  box.innerHTML=`${prefs.sound?'':'<div class="sndwarn">🔕 Звук вимкнено. Натисни 🔔 угорі, щоб увімкнути.</div>'}
+   <label class="inline">Гучність <input type="range" id="sndVol" min="0" max="1" step="0.05" value="${prefs.vol==null?0.7:prefs.vol}" style="flex:1"></label>
+   <div class="voicebox">
+     <label class="inline"><input type="checkbox" id="vOn" ${prefs.voice!==false?'checked':''}> 🗣 Голосові оголошення</label>
+     ${HAS_TTS&&ukVoices().length?`<label class="inline">Голос <select id="vSel" style="flex:1;min-width:0">${ukVoices().map(v=>`<option value="${esc(v.voiceURI)}" ${pickVoice()&&pickVoice().voiceURI===v.voiceURI?'selected':''}>${esc(v.name)}</option>`).join('')}</select></label>
+     <label class="inline">Швидкість <input type="range" id="vRate" min="0.7" max="1.4" step="0.05" value="${prefs.vrate||1}" style="flex:1"></label>
+     <button class="btn sm" id="vTest">▶ Прослухати голос</button>`
+     :`<div class="sndwarn">У цьому браузері немає українського голосу. Найкраще працює в <b>Microsoft Edge</b> (голоси «Ostap» і «Polina») та в Chrome на <b>Android</b>. У Windows можна додати: Параметри → Час і мова → Мовлення → Додати голоси → Українська.</div>`}
+   </div>
+   <div class="sndlist">${Object.keys(SOUNDS).map(k=>`<div class="sndrow"><label><input type="checkbox" data-g="${SOUNDS[k].grp}" ${st[SOUNDS[k].grp]!==false?'checked':''}> ${SOUNDS[k].name}</label><button class="btn sm" data-play="${k}" title="Прослухати">▶</button></div>`).join('')}</div>`;
+  box.querySelector('#sndVol').oninput=e=>{prefs.vol=+e.target.value;savePrefs();if(A.out)A.out.gain.value=prefs.vol;};
+  box.querySelectorAll('[data-g]').forEach(cb=>cb.onchange=()=>{prefs.snd=Object.assign({},prefs.snd,{[cb.dataset.g]:cb.checked});savePrefs();renderSoundUI();});
+  box.querySelectorAll('[data-play]').forEach(b=>b.onclick=()=>playSound(b.dataset.play,true));
+  const vOn=box.querySelector('#vOn');if(vOn)vOn.onchange=()=>{prefs.voice=vOn.checked;savePrefs();};
+  const vSel=box.querySelector('#vSel');if(vSel)vSel.onchange=()=>{prefs.voiceURI=vSel.value;savePrefs();};
+  const vRate=box.querySelector('#vRate');if(vRate)vRate.oninput=()=>{prefs.vrate=+vRate.value;savePrefs();};
+  const vT=box.querySelector('#vTest');if(vT)vT.onclick=()=>{const d=playSound('post',true);say('Увага! Шахед. Сумська область. Курс на південний захід. Пройдіть до укриття.',Math.round(d*1000)+200,true);};
+}
+if(HAS_TTS)speechSynthesis.onvoiceschanged=()=>{if($('soundSet'))renderSoundUI();};
 function initViewer(){
   const sel=$('regionSel');
   sel.innerHTML='<option value="">Вся Україна</option>'+ORDER.map(id=>`<option value="${id}">${id===KYIV.id?'м. Київ':NAMES[id]}</option>`).join('');
   sel.value=prefs.region||'';sel.onchange=()=>{prefs.region=sel.value;savePrefs();renderLists();};
   const sb=$('soundBtn');const paint=()=>{sb.classList.toggle('on',!!prefs.sound);sb.textContent=prefs.sound?'🔔':'🔕';sb.title=prefs.sound?'Звук увімкнено':'Увімкнути звук';};
-  paint();sb.onclick=()=>{prefs.sound=!prefs.sound;savePrefs();paint();if(prefs.sound)beep(880,1);};
+  paint();sb.onclick=()=>{prefs.sound=!prefs.sound;savePrefs();paint();if(prefs.sound)playSound('post',true);renderSoundUI();};
+  renderSoundUI();
   // моя точка
   const hc=$('homeCity');hc.innerHTML='<option value="">Обрати місто…</option>'+cities.map((c,i)=>`<option value="${i}">${c.name}</option>`).join('');
   hc.onchange=()=>{const c=cities[+hc.value];if(c)setHome(c.lon,c.lat,c.name);hc.value='';};
